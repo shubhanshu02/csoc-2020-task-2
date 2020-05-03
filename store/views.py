@@ -1,3 +1,4 @@
+import datetime
 from django.http import Http404
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
@@ -72,22 +73,35 @@ def loanBookView(request):
     '''
     book_id = request.POST['bid']
     books = BookCopy.objects.filter(book_id = book_id, status = True)
-    msg = 'success' if books.count() > 0 else 'failure'
+    if books.count() > 0:
+        msg = 'success' 
+        books = books.first()
+        books.status = False
+        books.borrower = request.user
+        books.borrow_date = datetime.date.today()
+        books.save()
+    else:
+        msg = 'failure'
     response_data = {
         'message': msg,
     }
     return JsonResponse(response_data)
 
-'''
-FILL IN THE BELOW VIEW BY YOURSELF.
-This view will return the issued book.
-You need to accept the book id as argument from a post request.
-You additionally need to complete the returnBook function in the loaned_books.html file
-to make this feature complete
-''' 
+
 @csrf_exempt
 @login_required
 def returnBookView(request):
-    print('\n\n\n\n', request.POST)
-
-
+    id = request.POST['bid']
+    book = BookCopy.objects.filter(id = id, status = False).first()
+    if (book is not None):
+        book.status = True
+        book.borrower = None
+        book.borrow_date = None
+        book.save()
+        msg = 'success'
+    else:
+        msg = 'failure'
+    response_data = {
+        'message': msg,
+    }
+    return JsonResponse(response_data)

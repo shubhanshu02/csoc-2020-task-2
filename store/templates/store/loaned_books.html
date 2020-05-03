@@ -21,9 +21,9 @@
         <th scope="col">Return Buttons</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="table-body">
         {% for copy in books %}
-        <tr>
+        <tr id="{{ copy.id }}" >
         <th scope="row">{{ forloop.counter }}</th>
         <td><a href="/book/{{copy.book.id}}/">{{ copy.book.title }}</a></td>
         <td>{{ copy.book.author }}</td>
@@ -37,7 +37,37 @@
 <script>
 // Fill in this function by yourself. It should make a post call to the returnBookView and display an appropriate message
 function returnBook(bid){
-    ;
+
+    $.ajax({
+		url: "{% url 'return-book' %}",
+		method: "POST",
+		data: {
+			bid: bid
+		},
+		success: function(data, status, xhr){
+			if(data['message'] == "success"){
+                row = document.getElementById(bid);
+                start = Number(row.firstElementChild.innerText);
+                end = Number(document.getElementById('table-body').lastElementChild.id);
+                row.parentElement.removeChild(row);
+                for (let i=bid+1; i<= end; i++) {
+                    var t = document.getElementById(i);
+                    if (t != null) {
+                        t.firstElementChild.innerText = String(start);
+                        start++;
+                    }
+                }
+                alert("Book successfully returned");
+			}
+			else{
+				alert("Unable to return this book");
+			}
+		},
+		error: function(xhr, status, err){
+			alert("Some error occured");
+		}
+
+	})
 }
 </script>
 {% endblock %}
