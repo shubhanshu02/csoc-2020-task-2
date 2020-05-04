@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Sign up</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="control-group">
+            <label class="control-label" for="username">Username:</label>
+            
+                <input type="text" id="username" name="username"  placeholder="Username">
+            
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="first_name">First Name:</label>
+            
+                <input type="first_name" name="first_name" id="first_name" placeholder="Password">
+            
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="last_name">Last Name:</label>
+            
+                <input type="last_name" name="last_name" id="last_name" placeholder="Last Name">
+            
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="password">Password:</label>
+                <input type="password" name="password" id="password" placeholder="Password">
+        </div>
+
+        <div class="control-group">
+                <button type="submit" class="btn">Register</button>
+        </div>
+        <div>
+        Already have an account? <a href="/login"><strong>login</strong></a>!
+  </form>
+{% endblock %}

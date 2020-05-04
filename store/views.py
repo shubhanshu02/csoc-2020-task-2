@@ -35,9 +35,11 @@ def bookDetailView(request, bid):
     books.rating = round(r, 2)
     books.save()
     if request.user.is_authenticated and avgratings.count() > 0:
-        avgratings = avgratings.filter(user = request.user).first().rating
+        avgratings = avgratings.filter(user_id = request.user.id).first()
+        if avgratings != None:
+            avgratings = avgratings.rating
     else:
-        avgratings = 0
+        avgratings = None
     context = {
         'book': books,
         'num_available': num,

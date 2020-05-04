@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+    <div id="logout">
+        <p>
+            Successfully Logged Out.
+        </p>
+    </div>
+    {% if message %}
+        <script>alert("{{ message }}")</script>
+    {% endif %}
+{% endblock %}
