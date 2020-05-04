@@ -12,6 +12,7 @@ sqlparse = "==0.3.0"
 Django = "==2.2.1"
 gunicorn = "*"
 django-heroku = "*"
+django-picklefield = "*"
 
 [requires]
 python_version = "3.8"

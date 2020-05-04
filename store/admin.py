@@ -4,3 +4,4 @@ from store.models import *
 
 admin.site.register(Book)
 admin.site.register(BookCopy)
+admin.site.register(UserRating)

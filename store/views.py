@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from store.models import Book, BookCopy
+from store.models import Book, BookCopy, UserRating
 # Create your views here.
 
 def index(request):
@@ -26,9 +26,22 @@ def bookDetailView(request, bid):
     else:
         raise Http404('Book does not exist')
 
+    avgratings = UserRating.objects.filter(book = books)
+    r = 0
+    if len(avgratings) != 0:
+        for i in avgratings:
+            r += i.rating
+        r /= len(avgratings)
+    books.rating = round(r, 2)
+    books.save()
+    if request.user.is_authenticated and avgratings.count() > 0:
+        avgratings = avgratings.filter(user = request.user).first().rating
+    else:
+        avgratings = 0
     context = {
         'book': books,
         'num_available': num,
+        'usrating': avgratings,
     }
 
     return render(request, template_name, context=context)
@@ -50,6 +63,15 @@ def bookListView(request):
     context = {
         'books': books,
     }
+    for i in books:
+        x = UserRating.objects.filter(book = i)
+        r = 0
+        if len(x) != 0:
+            for i in x:
+                r += i.rating
+            r /= len(x)
+        i.rating = round(r, 2)
+        i.save()
 
     return render(request, template_name, context=context)
 
@@ -105,3 +127,34 @@ def returnBookView(request):
         'message': msg,
     }
     return JsonResponse(response_data)
+
+
+@csrf_exempt
+@login_required
+def ChangeRatingView(request):
+    book_id = request.POST['bid']
+    value = request.POST['value']
+    book = UserRating.objects.filter(book_id = book_id, user = request.user)
+    if len(book) != 0:
+        book = book.first()
+        book.rating = value
+        book.save()
+    else:
+        b = Book.objects.filter(id = book_id)[0]
+        bnb = UserRating(book = b, user = request.user, rating = value)
+        bnb.save()
+
+
+    avgratings = UserRating.objects.filter(book_id = book_id)
+    r = 0
+    if len(avgratings) != 0:
+        for i in avgratings:
+            r += i.rating
+        r /= len(avgratings)
+    b = Book.objects.filter(id = book_id)[0]
+    b.rating = round(r, 2)
+    b.save()
+    context = {
+        'rating': round(r,2),
+    }
+    return JsonResponse(context)

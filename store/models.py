@@ -30,3 +30,7 @@ class BookCopy(models.Model):
         else:
             return f'{self.book.title} - Available'
 
+class UserRating(models.Model):
+    book = models.ForeignKey(Book, null=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    rating = models.PositiveIntegerField(default = 0)

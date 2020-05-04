@@ -4,7 +4,7 @@ from django.contrib.auth import login,logout,authenticate
 
 
 def loginView(request):
-    pass
+    return render(request, 'authentication/login.html')
 
 def logoutView(request):
     pass
