@@ -1,34 +1,39 @@
 {% extends "base.html" %}
 {% block content %}
+    <h3>Login </h3>
     <div id="login">
         <form class="form-horizontal" name="LoginForm" action="/login/" method="post">
         {% csrf_token %}
         {% if next %}
             <input type="hidden" name="next" value="{{ next }}" />
         {% endif %}
-        <div class="control-group">
-            <label class="control-label" for="username">Username</label>
-            <div class="controls">
+        <div class="col-sm-6">
+            <label class="control-label" for="username">Username*:</label>
+            
                 <input type="text" id="username" name="username"  placeholder="Username">
-            </div>
+
         </div>
-        <div class="control-group">
-            <label class="control-label" for="password">Password</label>
-            <div class="controls">
+        <div class="col-sm-6">
+            <label class="control-label" for="password">Password*:</label>
+
                 <input type="password" name="password" id="password" placeholder="Password">
-            </div>
+
         </div>
-        <div class="control-group">
-            <div class="controls">
-                <button type="submit" class="btn">Login</button>
-            </div>
+        <div class="col-sm-6">
+
+                <button type="submit" class="btn btn-primary">Login</button>
+
         </div>
         <div>
         Don't have an account? <a href="/register"><strong>register here</strong></a>!
       </div>
         </form>
     </div>
-    {% if message %}
-        <script>alert("{{ message }}")</script>
+    {% if messages %}
+    <ul class="messages">
+            {% for message in messages %}
+            <script>alert("{{ message }}")</script>
+            {% endfor %}
+    </ul>
     {% endif %}
 {% endblock %}
