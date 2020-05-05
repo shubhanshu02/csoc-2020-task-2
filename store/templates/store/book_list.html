@@ -8,7 +8,7 @@
 
 {% block content %}
 
-<h3>Books list</h3>
+<h3>Books List</h3>
 <div class="row">
     <div class="col-sm-3">
         Title: <input type="text" name="title" id="title">
@@ -41,7 +41,6 @@
         <td><a href="/book/{{ book.id }}/">{{ book.title }}</a></td>
         <td>{{ book.author }}</td>
         <td>{{ book.genre }}</td>
-        <!-- <td>{{ book.rating }}</td> -->
         <td>
             {% if book.rating == -1 %} None
             {% else %} {{ book.rating }}
