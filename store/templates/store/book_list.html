@@ -41,7 +41,12 @@
         <td><a href="/book/{{ book.id }}/">{{ book.title }}</a></td>
         <td>{{ book.author }}</td>
         <td>{{ book.genre }}</td>
-        <td>{{ book.rating }}</td>
+        <!-- <td>{{ book.rating }}</td> -->
+        <td>
+            {% if book.rating == -1 %} None
+            {% else %} {{ book.rating }}
+            {% endif %} 
+        </td>
         <td>{{ book.mrp }}</td>
         </tr>
         {% endfor %}

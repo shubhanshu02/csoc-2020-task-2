@@ -9,4 +9,5 @@ urlpatterns = [
     path('books/loan/', loanBookView, name="loan-book"),
     path('books/return/', returnBookView, name="return-book"),
     path('book/changerating', ChangeRatingView, name="change-rating"),
+    path('book/removerating', RemoveRatingView, name="remove-rating"),
 ]

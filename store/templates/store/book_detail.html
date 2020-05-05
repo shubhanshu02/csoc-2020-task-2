@@ -15,11 +15,18 @@
     <dt>Description:</dt>
     <dd>{{ book.description }}</dd>
     <dt>Avg Rating:</dt>
-    <dd id="rate">{{ book.rating }}</dd>
+
+	<dd id="rate">
+            {% if book.rating == -1 %} None
+            {% else %} {{ book.rating }}
+            {% endif %} 
+    </dd>
+
 	{% if user.is_authenticated %}
 		<dt>User Rating:</dt>
-		<select onchange="changeUserRating(this)">
+		<select onchange="changeUserRating(this)" id='slct'>
 			<option value="{{ usrating }}" selected disabled hidden>{{ usrating }}</option>
+			<option value="none" hidden>None</option>
 			<option value="0">0</option>
 			<option value="1">1</option>
 			<option value="2">2</option>
@@ -32,6 +39,7 @@
 			<option value="9">9</option>
 			<option value="10">10</option>
 		</select>
+		<button class="btn btn-secondary btn-sm" id="remove">Remove Rating</button>
     {% endif %} 
 	<dt>MRP:</dt>
     <dd>Rs. {{ book.mrp }}</dd>
@@ -81,6 +89,33 @@ $("#loan-button").click(function(){
 		}
 
 	})
+})
+
+$("#remove").click(function(){
+	$.ajax({
+		url: "{% url 'remove-rating' %}",
+		method: "POST",
+		data: {
+			bid: {{ book.id }},
+		},
+		success: function(data, status, xhr){
+			if(data['msg'] == "success"){
+                alert("Successfully Deleted User Rating for the book!");
+                document.getElementById("slct").selectedIndex = 1; 
+				if (data['value'] != -1) document.getElementById('rate').innerText = data['value'];
+				else document.getElementById('rate').innerText = 'None';
+			}
+			else{
+				alert("No user rating found");
+			}			
+		},
+		error: function(xhr, status, err){
+			alert("Some error occured");
+		}
+
+	})
+
+
 })
 </script>
 {% endblock %}

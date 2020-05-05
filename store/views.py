@@ -32,6 +32,8 @@ def bookDetailView(request, bid):
         for i in avgratings:
             r += i.rating
         r /= len(avgratings)
+    else:
+        r = -1
     books.rating = round(r, 2)
     books.save()
     if request.user.is_authenticated and avgratings.count() > 0:
@@ -72,6 +74,8 @@ def bookListView(request):
             for i in x:
                 r += i.rating
             r /= len(x)
+        else:
+            r = -1
         i.rating = round(r, 2)
         i.save()
 
@@ -112,6 +116,8 @@ def loanBookView(request):
     return JsonResponse(response_data)
 
 
+
+
 @csrf_exempt
 @login_required
 def returnBookView(request):
@@ -134,29 +140,72 @@ def returnBookView(request):
 @csrf_exempt
 @login_required
 def ChangeRatingView(request):
-    book_id = request.POST['bid']
-    value = request.POST['value']
-    book = UserRating.objects.filter(book_id = book_id, user = request.user)
-    if len(book) != 0:
-        book = book.first()
-        book.rating = value
-        book.save()
+    if request.method == 'POST':    
+        book_id = request.POST['bid']
+        value = request.POST['value']
+        book = UserRating.objects.filter(book_id = book_id, user = request.user)
+        if len(book) != 0:
+            book = book.first()
+            book.rating = value
+            book.save()
+        else:
+            b = Book.objects.filter(id = book_id)[0]
+            bnb = UserRating(book = b, user = request.user, rating = value)
+            bnb.save()
+
+
+        avgratings = UserRating.objects.filter(book_id = book_id)
+        r = 0
+        if len(avgratings) != 0:
+            for i in avgratings:
+                r += i.rating
+            r /= len(avgratings)
+            b = Book.objects.filter(id = book_id)[0]
+            b.rating = round(r, 2)
+            b.save()
+        else:
+            b.rating = -1
+            b.save()
+        context = {
+            'rating': round(r,2),
+        }
+        return JsonResponse(context)
     else:
-        b = Book.objects.filter(id = book_id)[0]
-        bnb = UserRating(book = b, user = request.user, rating = value)
-        bnb.save()
+        raise Http404
 
+@csrf_exempt
+@login_required
+def RemoveRatingView(request):
+    #raise Http404('sahi tha')
+    if request.method == 'POST':
+        book_id = request.POST['bid']
+        book = UserRating.objects.filter(book_id = book_id, user = request.user)
+        if len(book) != 0:
+            book = book.first()
+            book.delete()
+            msg = 'success'
+            book = UserRating.objects.filter(book_id = book_id)
+            if len(book) != 0:
+                r = 0
+                for i in book:
+                    r += i.rating
+                r /= len(book)
+                val = r
 
-    avgratings = UserRating.objects.filter(book_id = book_id)
-    r = 0
-    if len(avgratings) != 0:
-        for i in avgratings:
-            r += i.rating
-        r /= len(avgratings)
-    b = Book.objects.filter(id = book_id)[0]
-    b.rating = round(r, 2)
-    b.save()
-    context = {
-        'rating': round(r,2),
-    }
-    return JsonResponse(context)
+            else:
+                val = -1
+
+        else:
+            # no rating found
+            msg = 'fail'
+        b = Book.objects.filter(id = book_id).first()
+        b.rating = val
+        b.save()
+        print('\n\n\n\n\n', msg ,val)
+        context = {
+            'msg': msg,
+            'value': val
+        }
+        return JsonResponse(context)
+    else:
+        raise Http404
