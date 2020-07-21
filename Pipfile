@@ -9,7 +9,7 @@ verify_ssl = true
 certifi = "==2019.3.9"
 pytz = "==2019.1"
 sqlparse = "==0.3.0"
-Django = "==2.2.1"
+Django = "==2.2.13"
 gunicorn = "*"
 django-heroku = "*"
 django-picklefield = "*"
